@@ -1,0 +1,24 @@
+# Proposed for Frozen-In-Flames/the-registry at .github/workflows/ci.yml
+# Test command grounded in the repo layout: tests/ is a unittest package
+# (tests/__init__.py present). The audit independently ran:
+# python3 -m unittest discover. Standard library only in the test path
+# (live USPTO and SEC EDGAR pulls are runtime features, not unit tests),
+# so no pip install step is needed.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest discover
