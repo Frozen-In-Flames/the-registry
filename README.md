@@ -99,3 +99,15 @@ a real nation recording real disclosures, filings, and counts.
 ## License
 
 Apache-2.0.
+
+## Live USPTO source
+
+Live corroboration of a filing (`patent uspto-check`) is served by
+patent-portfolio-apis, the USPTO layer of this family, through its
+PPUBSClient (see `uspto_source.py`). The package is located from an
+installed `ppa` package, the `PATENT_PORTFOLIO_APIS_DIR` environment
+variable, or a sibling checkout. When it cannot be located, the
+registry falls back to the direct PPUBS check that shipped with it,
+so offline behavior is unchanged. The hash chain in
+`patent_office.py` remains the nation-side record in both cases; the
+USPTO result is corroboration, never the record itself.

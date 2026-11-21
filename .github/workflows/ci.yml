@@ -17,8 +17,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check out patent-portfolio-apis for the USPTO wiring test
+        uses: actions/checkout@v4
+        with:
+          repository: Frozen-In-Flames/patent-portfolio-apis
+          path: patent-portfolio-apis-src
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install the one dependency of the ppa USPTO client
+        run: pip install requests
       - name: Unit tests
+        env:
+          PATENT_PORTFOLIO_APIS_DIR: ${{ github.workspace }}/patent-portfolio-apis-src
         run: python -m unittest discover

@@ -137,6 +137,30 @@ class PatentOffice:
 
     # -- live corroboration (optional, network) -------------------------
     def uspto_check(self, patent_number, timeout=30):
+        """Corroborate against the live USPTO via patent-portfolio-apis.
+
+        The live source of record is patent-portfolio-apis (see
+        uspto_source.py). When that package cannot be imported or its
+        lookup fails, this falls back to the direct PPUBS check that
+        shipped with the registry, so offline behavior is unchanged.
+        The hash chain in this module remains the nation-side record
+        either way; the USPTO result is corroboration, never the record.
+        """
+        number = "".join(ch for ch in patent_number if ch.isdigit())
+        if not number:
+            return {"status": "invalid_number",
+                    "patent_number": patent_number}
+        try:
+            import uspto_source
+            result = uspto_source.fetch_patent(number)
+        except Exception:
+            result = None
+        if result is not None:
+            result["checked_at"] = _now()
+            return result
+        return self._uspto_check_direct(patent_number, timeout=timeout)
+
+    def _uspto_check_direct(self, patent_number, timeout=30):
         """Corroborate a US patent number against the live USPTO.
 
         Returns a dict with status "found" (plus filing/publication
